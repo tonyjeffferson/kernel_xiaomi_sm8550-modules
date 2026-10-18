@@ -629,6 +629,11 @@ static ssize_t gpu_available_frequencies_show(struct device *dev,
 	int index, num_chars = 0;
 
 	for (index = 0; index < pwr->num_pwrlevels; index++) {
+		/* Some SKU tables keep duplicate OPP slots for thermal-level alignment. */
+		if (index > 0 && pwr->pwrlevels[index].gpu_freq ==
+				pwr->pwrlevels[index - 1].gpu_freq)
+			continue;
+
 		num_chars += scnprintf(buf + num_chars,
 			PAGE_SIZE - num_chars - 1,
 			"%d ", pwr->pwrlevels[index].gpu_freq);
